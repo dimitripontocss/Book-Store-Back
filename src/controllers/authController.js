@@ -11,7 +11,6 @@ import handleError from "../utils/handleError.js"
 export async function signup(req,res){
 	try{
 		const {name, email, password, passwordConfirmation} = req.body;
-
 		
 		const { error } = signupSchema.validate(req.body);
 		if(error){
