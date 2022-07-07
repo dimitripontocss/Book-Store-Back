@@ -1,4 +1,3 @@
-import { v4 as uuid } from "uuid"
 import bcrypt from "bcrypt";
 
 import db from "../database/mongo.js"
@@ -6,6 +5,7 @@ import { signupSchema, loginSchema } from "../joiSchemas/authSchema.js";
 
 import ApiError from "../utils/apiError.js"
 import handleError from "../utils/handleError.js"
+import jwtGenerator from "../utils/jwtGenerator.js";
 
 
 export async function signup(req,res){
@@ -60,7 +60,12 @@ export async function login(req,res){
 		}
 		const passwordValidate = bcrypt.compareSync(password, possibleUser.password);
 		if(passwordValidate){
-			const token = uuid();
+			const data = {
+				name: possibleUser.name,
+				userId: possibleUser._id
+			}
+			const token = jwtGenerator(data);
+			console.log(token)
 			await db.collection("sessions").insertOne({
 				token,
 				userId: possibleUser._id
