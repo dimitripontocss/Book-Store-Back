@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 import handleError from "../utils/handleError";
 
-export async function jtwAuth(){
+export async function jtwAuth(req,res){
     try{
         const key = process.env.SENHA_JWT;
         const { authorization } = req.headers;
