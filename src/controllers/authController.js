@@ -19,11 +19,11 @@ export async function signup(req,res){
 
 		const alreadyExist = await db.collection("users").findOne({ email: email});
 		if(alreadyExist){
-			throw new ApiError("Este email já entá cadastrado!",400);
+			throw new ApiError("Este email já está cadastrado!",400);
 		}
 
 		if(password !== passwordConfirmation){
-			throw new ApiError("As senhas devem ser iguais!",400);
+			throw new ApiError("As senhas devem ser iguais!",406);
 		}
 		const cryptedPassword = bcrypt.hashSync(password, 10);
 

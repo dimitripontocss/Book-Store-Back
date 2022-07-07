@@ -14,6 +14,6 @@ app.use(authRouter);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log("Servidor online na porta: 5000", process.env.PORT)
+    console.log("Servidor online na porta:", process.env.PORT)
 })
 
