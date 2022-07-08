@@ -1,4 +1,3 @@
-import { v4 as uuid } from "uuid"
 import bcrypt from "bcrypt";
 
 import db from "../database/mongo.js"
@@ -6,6 +5,7 @@ import { signupSchema, loginSchema } from "../joiSchemas/authSchema.js";
 
 import ApiError from "../utils/apiError.js"
 import handleError from "../utils/handleError.js"
+import jwtGenerator from "../utils/jwtGenerator.js";
 
 
 export async function signup(req,res){
@@ -19,11 +19,11 @@ export async function signup(req,res){
 
 		const alreadyExist = await db.collection("users").findOne({ email: email});
 		if(alreadyExist){
-			throw new ApiError("Este email já entá cadastrado!",400);
+			throw new ApiError("Este email já está cadastrado!",400);
 		}
 
 		if(password !== passwordConfirmation){
-			throw new ApiError("As senhas devem ser iguais!",400);
+			throw new ApiError("As senhas devem ser iguais!",406);
 		}
 		const cryptedPassword = bcrypt.hashSync(password, 10);
 
@@ -60,11 +60,11 @@ export async function login(req,res){
 		}
 		const passwordValidate = bcrypt.compareSync(password, possibleUser.password);
 		if(passwordValidate){
-			const token = uuid();
-			await db.collection("sessions").insertOne({
-				token,
+			const data = {
+				name: possibleUser.name,
 				userId: possibleUser._id
-			})
+			}
+			const token = jwtGenerator(data);
 			return res.status(201).send(
 				{
 					token: token,
