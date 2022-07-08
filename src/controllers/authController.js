@@ -65,11 +65,6 @@ export async function login(req,res){
 				userId: possibleUser._id
 			}
 			const token = jwtGenerator(data);
-			console.log(token)
-			await db.collection("sessions").insertOne({
-				token,
-				userId: possibleUser._id
-			})
 			return res.status(201).send(
 				{
 					token: token,
