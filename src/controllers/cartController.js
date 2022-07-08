@@ -1,5 +1,10 @@
-import db from "../database/mongo.js";
 import { ObjectId } from "mongodb";
+
+import db from "../database/mongo.js";
+
+import { searchUserCart } from "../utils/searchUserCart.js"
+
+
 
 export async function getUserCart(req,res){
     const {userId} = res.locals.data;
@@ -11,14 +16,6 @@ export async function getUserCart(req,res){
         console.log(error);
     }
     
-}
-
-async function searchUserCart(userId,res){
-    const userCart = await db.collection("carts").findOne({userId: userId});
-    if(userCart.error){
-        handleError(404,"Não existem carrinhos desse usuário.",res)
-    }
-    return userCart;
 }
 
 async function findProducts(selectedItems){
