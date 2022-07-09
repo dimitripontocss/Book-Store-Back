@@ -1,12 +1,8 @@
 import { ObjectId } from "mongodb";
-
 import db from "../database/mongo.js";
+import { searchUserCart } from "../utils/searchUserCart.js";
 
-import { searchUserCart } from "../utils/searchUserCart.js"
-
-
-
-export async function getUserCart(req,res){
+export async function getUserCart(req, res){
     const {userId} = res.locals.data;
     try{
         const userCart = await searchUserCart(userId,res);
@@ -15,7 +11,6 @@ export async function getUserCart(req,res){
     }catch(error){
         console.log(error);
     }
-    
 }
 
 async function findProducts(selectedItems){
@@ -45,3 +40,5 @@ export async function deleteProduct(req,res){
     }
     console.log(id)
 }
+
+
