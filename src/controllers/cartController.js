@@ -49,6 +49,7 @@ export async function deleteProduct(req,res){
             await db.collection("carts").updateOne({ userId },{
             $set:{selectedItems:selectedItems}
         });
+        res.sendStatus(200);
         }
         else{
             throw new ApiError("Não foi possivel achar um carrinho,",404);
