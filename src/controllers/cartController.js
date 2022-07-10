@@ -8,7 +8,7 @@ import handleError from "../utils/handleError.js";
 export async function getUserCart(req, res){
     const {userId} = res.locals.data;
     try{
-        const userCart = await db.collection("carts").findOne({userId: userId});
+        const userCart = await searchUserCart(userId,res);
         if(userCart){
             const {products,totalFixed} = await findProducts(userCart.selectedItems); 
             res.status(200).send({products,totalFixed});
@@ -43,18 +43,22 @@ export async function deleteProduct(req,res){
     const {userId} = res.locals.data;
     const id = req.params.productID;
     try{
-        const {selectedItems} = await db.collection("carts").findOne({userId: userId});
+        const {selectedItems} = await searchUserCart(userId,res);
         if(selectedItems){
-            selectedItems.splice(selectedItems.indexOf(id),1);
-            await db.collection("carts").updateOne({ userId },{
-            $set:{selectedItems:selectedItems}
-        });
-        res.sendStatus(200);
+            const index = selectedItems.indexOf(id);
+            if(index === -1){
+                throw new ApiError("Não foi possivel achar esse item no carrinho.",404);
+            }else{
+                selectedItems.splice(index,1);
+                await db.collection("carts").updateOne({ userId },{
+                    $set:{selectedItems:selectedItems}
+                });
+            }
+            res.sendStatus(200);
         }
         else{
-            throw new ApiError("Não foi possivel achar um carrinho,",404);
+            throw new ApiError("Não foi possivel achar um carrinho.",404);
         }
-        
     }catch(error){
 		console.log(error);
 		if(error instanceof ApiError){
@@ -69,7 +73,7 @@ export async function postProduct(req,res){
     const {userId} = res.locals.data;
     const productId = req.body.productId;
     try{
-        const userCart = await db.collection("carts").findOne({userId: userId});
+        const userCart = await searchUserCart(userId,res);
         if(userCart){
             await db.collection("carts").updateOne({ userId },{
                 $push: {selectedItems: productId}
