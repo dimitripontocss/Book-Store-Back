@@ -1,14 +1,15 @@
 import { ObjectId } from "mongodb";
 import db from "../database/mongo.js";
 
-import { searchUserCart } from "../utils/searchUserCart.js";
 import ApiError from "../utils/apiError.js"
 import handleError from "../utils/handleError.js";
 
 export async function getUserCart(req, res){
     const {userId} = res.locals.data;
+    console.log(userId)
     try{
-        const userCart = await searchUserCart(userId,res);
+        const userCart = await db.collection("carts").findOne({userId: userId});
+        console.log(userCart)
         if(userCart){
             const {products,totalFixed} = await findProducts(userCart.selectedItems); 
             res.status(200).send({products,totalFixed});
@@ -43,7 +44,7 @@ export async function deleteProduct(req,res){
     const {userId} = res.locals.data;
     const id = req.params.productID;
     try{
-        const {selectedItems} = await searchUserCart(userId,res);
+        const {selectedItems} = await db.collection("carts").findOne({userId: userId});
         if(selectedItems){
             const index = selectedItems.indexOf(id);
             if(index === -1){
@@ -73,7 +74,7 @@ export async function postProduct(req,res){
     const {userId} = res.locals.data;
     const productId = req.body.productId;
     try{
-        const userCart = await searchUserCart(userId,res);
+        const userCart = await db.collection("carts").findOne({userId: userId});
         if(userCart){
             await db.collection("carts").updateOne({ userId },{
                 $push: {selectedItems: productId}
